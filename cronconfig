@@ -1,0 +1,2 @@
+0 * * * * /newman/run.sh >> /proc/1/fd/1 2>/proc/1/fd/2
+# Newline to make file valid

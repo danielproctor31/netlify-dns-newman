@@ -1,0 +1,170 @@
+{
+	"info": {
+		"_postman_id": "a2439763-d0f5-497b-b144-c0643413c93c",
+		"name": "Update DNS Records",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get Ip",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.globals.set(\"ip\", responseBody);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{ipUrl}}",
+					"host": [
+						"{{ipUrl}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Record From Hostname",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// get hostname for iteration and set as global variable",
+							"const hostname = pm.iterationData.get('hostname');",
+							"pm.globals.set('hostname', hostname);",
+							"",
+							"// find existing dns record for hostname",
+							"const record = ",
+							"    JSON.parse(responseBody).find(x => x.hostname == hostname);",
+							"",
+							"if (record == null) {",
+							"    // skip to create record",
+							"    postman.setNextRequest('Create Record');",
+							"} else if (record.value != pm.globals.get('ip')) {",
+							"    // set record id and continue collection",
+							"    pm.globals.set('recordId', record.id);",
+							"} else{",
+							"    // no update needed",
+							"    postman.setNextRequest(null);",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/dns_zones/{{zone}}/dns_records",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"dns_zones",
+						"{{zone}}",
+						"dns_records"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Record",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/dns_zones/{{zone}}/dns_records/{{recordId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"dns_zones",
+						"{{zone}}",
+						"dns_records",
+						"{{recordId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Record",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"type\": \"A\",\n    \"hostname\": \"{{hostname}}\",\n    \"value\": \"{{ip}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/dns_zones/{{zone}}/dns_records",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"dns_zones",
+						"{{zone}}",
+						"dns_records"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

@@ -1,0 +1,7 @@
+version: "2.4"
+services:
+  app:
+    build:
+      context: .
+    container_name: netlify-dns-newman
+    restart: unless-stopped
