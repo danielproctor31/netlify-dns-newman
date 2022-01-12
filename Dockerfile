@@ -1,4 +1,4 @@
-FROM postman/newman:alpine
+FROM node:16.13-alpine
 
 # Create newman dir
 RUN mkdir /newman
@@ -11,9 +11,12 @@ COPY cronconfig cronconfig
 COPY environment.postman_environment.json environment.postman_environment.json
 COPY collection.postman_collection.json collection.postman_collection.json
 
-# install dos2unix
+# Install dos2unix and node
 RUN apk update \
     apk --no-cache add dos2unix
+
+# Install newman
+RUN npm install -g newman
 
 # ensure scripts are using correct line endings
 RUN dos2unix "run.sh"
